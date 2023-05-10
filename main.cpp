@@ -7,7 +7,7 @@
  * @Description: Web Server main function
  */
 #include <bits/stdc++.h>
-#include <winsock2.h>
+#include <sys/socket.h>
 #include "config.h"
 #include "./threadpool/threadpool.h"
 #include "./http/http_conn.h"

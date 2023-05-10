@@ -1,10 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/TinyWebServer.dir/main.cpp.obj"
-  "CMakeFiles/TinyWebServer.dir/main.cpp.obj.d"
-  "TinyWebServer.exe"
-  "TinyWebServer.exe.manifest"
+  "CMakeFiles/TinyWebServer.dir/main.cpp.o"
+  "TinyWebServer"
   "TinyWebServer.pdb"
-  "libTinyWebServer.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,8 +1,7 @@
 [
 {
-  "directory": "Y:/Studyplace_Web_Development/Tiny_Web_Server/build",
-  "command": "S:\\mingw64_posix\\bin\\g++.exe   -g -o CMakeFiles\\TinyWebServer.dir\\main.cpp.obj -c Y:\\Studyplace_Web_Development\\Tiny_Web_Server\\main.cpp",
-  "file": "Y:/Studyplace_Web_Development/Tiny_Web_Server/main.cpp",
-  "output": "CMakeFiles/TinyWebServer.dir/main.cpp.obj"
+  "directory": "/home/lyb/application_development/cpp/Tiny_Web_Server/build",
+  "command": "/usr/bin/g++    -g   -o CMakeFiles/TinyWebServer.dir/main.cpp.o -c /home/lyb/application_development/cpp/Tiny_Web_Server/main.cpp",
+  "file": "/home/lyb/application_development/cpp/Tiny_Web_Server/main.cpp"
 }
 ]

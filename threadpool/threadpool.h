@@ -66,7 +66,7 @@ mThreadPool<T>::mThreadPool(int capacityTask, int capacityThreadPool)
     /* create thread group */
     for(int iter=0; iter<n_thread; iter++)
     {
-        m_threadgroup.emplace_back(std::thread(&mThreadPool::worker, this));
+        m_threadgroup.emplace_back(std::thread(std::bind(&mThreadPool::worker, this)));
     }
 }
 
@@ -149,7 +149,7 @@ void mThreadPool<T>::run()
             if there is a task, execute down.
             otherwise block waiting 
         */
-        m_condition.wait();
+        m_condition.wait(m_mutex);
 
         /* lock task queue       */
         std::unique_lock<std::mutex> lock(m_mutex);
