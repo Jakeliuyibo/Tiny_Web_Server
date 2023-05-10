@@ -5,14 +5,14 @@
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "compilerPath": "S:/mingw64/bin/gcc.exe",
-            "cStandard": "c11",
+            "compilerPath": "S:/mingw64_posix/bin/gcc.exe",
+            "cStandard": "c17",
             "cppStandard": "c++14",
             "intelliSenseMode": "windows-gcc-x64",
             "compilerArgs": [
                 ""
             ],
-            "configurationProvider": "go2sh.cmake-integration"
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

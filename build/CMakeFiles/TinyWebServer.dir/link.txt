@@ -1,0 +1,3 @@
+S:\cmake-3.26.0-windows-x86_64\bin\cmake.exe -E rm -f CMakeFiles\TinyWebServer.dir/objects.a
+S:\mingw64_posix\bin\ar.exe qc CMakeFiles\TinyWebServer.dir/objects.a @CMakeFiles\TinyWebServer.dir\objects1.rsp
+S:\mingw64_posix\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\TinyWebServer.dir/objects.a -Wl,--no-whole-archive -o TinyWebServer.exe -Wl,--out-implib,libTinyWebServer.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\TinyWebServer.dir\linkLibs.rsp

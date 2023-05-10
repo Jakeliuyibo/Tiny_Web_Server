@@ -110,7 +110,8 @@
     "shared_mutex": "cpp",
     "typeindex": "cpp",
     "valarray": "cpp",
-    "mthreadpool.h": "c"
+    "mthreadpool.h": "c",
+    "stdc++.h": "c"
   },
   "C_Cpp.default.compilerPath": "S:\\mingw64\\bin\\g++.exe"
 }

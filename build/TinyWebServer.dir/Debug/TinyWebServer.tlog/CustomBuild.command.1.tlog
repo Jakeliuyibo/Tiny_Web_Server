@@ -1,0 +1,10 @@
+^Y:\STUDYPLACE_WEB_DEVELOPMENT\TINY_WEB_SERVER\CMAKELISTS.TXT
+setlocal
+S:\cmake-3.26.0-windows-x86_64\bin\cmake.exe -SY:/Studyplace_Web_Development/Tiny_Web_Server -BY:/Studyplace_Web_Development/Tiny_Web_Server/build --check-stamp-file Y:/Studyplace_Web_Development/Tiny_Web_Server/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

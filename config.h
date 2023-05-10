@@ -1,5 +1,5 @@
-#ifndef 
-#define 
+#ifndef CONFIG_H
+#define CONFIG_H
 
 
-#endif /*  */
+#endif
