@@ -2,14 +2,17 @@
  * @Author: liuyibo 1299502716@qq.com
  * @Date: 2023-05-09 17:41:29
  * @LastEditors: liuyibo 1299502716@qq.com
- * @LastEditTime: 2023-05-09 17:45:02
+ * @LastEditTime: 2023-05-10 11:01:22
  * @FilePath: \Tiny_Web_Server\main.cpp
  * @Description: Web Server main function
  */
-#include "config.h"
+#include <bits/stdc++.h>
+#include <thread>
+// #include "config.h"
 
 
-int main(int argc, char *argv[])
+
+int main()
 {
     /* 1、创建数据库连接   */
     // a. 建立连接
@@ -22,6 +25,8 @@ int main(int argc, char *argv[])
     // b. 初始化日志模块
     
     /* 3、开启监听         */
+
+    std::cout << 23435 << std::endl;
 
     return 0;
 }
