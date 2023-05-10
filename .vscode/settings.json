@@ -111,7 +111,11 @@
     "typeindex": "cpp",
     "valarray": "cpp",
     "mthreadpool.h": "c",
-    "stdc++.h": "c"
+    "stdc++.h": "c",
+    "any": "cpp",
+    "hash_map": "cpp",
+    "bit": "cpp",
+    "variant": "cpp"
   },
   "C_Cpp.default.compilerPath": "S:\\mingw64\\bin\\g++.exe"
 }

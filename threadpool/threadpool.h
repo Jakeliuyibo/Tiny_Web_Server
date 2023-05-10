@@ -91,10 +91,7 @@ mThreadPool<T>::~mThreadPool()
     /* join thread in threadgroup */
     for(auto &t:m_threadgroup)
     {
-        if(t.joinable())
-        {
-            t.join();
-        }
+        t.join();
     }
     /* release threadgroup        */
     m_threadgroup.clear();
@@ -145,14 +142,14 @@ void mThreadPool<T>::run()
 {
     while(f_running)
     {
+        /* lock task queue       */
+        std::unique_lock<std::mutex> lock(m_mutex);
+
         /*  check whether there is a task in taskqueue,
             if there is a task, execute down.
             otherwise block waiting 
         */
-        m_condition.wait(m_mutex);
-
-        /* lock task queue       */
-        std::unique_lock<std::mutex> lock(m_mutex);
+        m_condition.wait(lock);
         if(m_taskqueue.empty())
         {
             std::unique_lock<std::mutex> unlock(m_mutex);
@@ -160,7 +157,7 @@ void mThreadPool<T>::run()
         }
 
         /* get the front task   */
-        Task task = m_taskqueue.front();
+        Task *task = m_taskqueue.front();
         m_taskqueue.pop();
 
         std::unique_lock<std::mutex> unlock(m_mutex);
