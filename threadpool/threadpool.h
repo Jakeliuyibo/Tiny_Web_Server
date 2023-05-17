@@ -18,14 +18,19 @@
 #include <exception>
 #include <atomic>
 
+class mTask
+{
+public:
+    virtual int run() = 0;                                  // 执行任务
+};
+
 template <typename T>
 class mThreadPool
 {
-    using Task = std::function<void()>;                     // 任务类型
 public:
     mThreadPool(int capacityTask, int capacityThreadPool);  // 构造函数
     ~mThreadPool();                                         // 析构函数
-    bool addTask(const Task& task);                         // 添加任务
+    bool addTask(const mTask& task);                        // 添加任务
 
 private:
     static void *worker(void *arg);                         // 工作处理函数
@@ -34,7 +39,7 @@ private:
 private:
     /* 定义：任务队列相关 */
     int                                 n_task_capacity;    // 最大任务数量
-    std::queue<Task>                    m_taskqueue;        // 任务队列
+    std::queue<mTask*>                  m_taskqueue;        // 任务队列
     std::mutex                          m_mutex;            // 互斥锁：保证多线程向任务队列添加和删除任务的互斥
     std::condition_variable             m_condition;        // 条件变量
 
@@ -157,7 +162,7 @@ void mThreadPool<T>::run()
         }
 
         /* get the front task   */
-        Task *task = m_taskqueue.front();
+        Task task = m_taskqueue.front();
         m_taskqueue.pop();
 
         std::unique_lock<std::mutex> unlock(m_mutex);
@@ -167,7 +172,7 @@ void mThreadPool<T>::run()
         }
 
         /* exec task function   */
-        task->process();
+        task.process();
 
     }
 }

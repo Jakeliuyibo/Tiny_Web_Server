@@ -17,23 +17,29 @@ class Task
     private:
         int total = 0;
     public:
-        Task(){}
+         Task(std::function<void()> func) : m_func(func) {}
         ~Task(){}
         void process()
         {
-            std::cout << "task successful！" << std::endl;
-            this_thread::sleep_for(chrono::seconds(1));
+            m_func();
         }
+    private:
+        std::function<void()> m_func;
 };
 
+void test()
+{
+    std::cout << "task successful！" << std::endl;
+    this_thread::sleep_for(chrono::seconds(1));
+}
 
 int main()
 {
     mThreadPool<Task> pool(8,8);
     for(int ii=0; ii<100; ii++)
     {
-        Task task = Task();
-        pool.addTask(&task);
+        Task *task = new Task(test);
+        pool.addTask((Task&)task);
         delete task;
     }
 

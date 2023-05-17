@@ -8,9 +8,16 @@ enable_testing()
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # # 指定为C++11 版本
-# set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_executable(TinyWebServer main.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/http)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/threadpool)
+
+add_executable(testThread ./threadpool/test_for_thread.cpp)
+
+# add_executable(TinyWebServer main.cpp)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
