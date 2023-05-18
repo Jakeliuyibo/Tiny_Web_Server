@@ -1,7 +1,7 @@
 [
 {
   "directory": "/home/lyb/application_development/cpp/Tiny_Web_Server/build",
-  "command": "/usr/bin/g++   -I/home/lyb/application_development/cpp/Tiny_Web_Server/http -I/home/lyb/application_development/cpp/Tiny_Web_Server/threadpool   -pthread -std=c++11 -g   -std=gnu++11 -o CMakeFiles/testThread.dir/threadpool/test_for_thread.cpp.o -c /home/lyb/application_development/cpp/Tiny_Web_Server/threadpool/test_for_thread.cpp",
-  "file": "/home/lyb/application_development/cpp/Tiny_Web_Server/threadpool/test_for_thread.cpp"
+  "command": "/usr/bin/g++   -I/home/lyb/application_development/cpp/Tiny_Web_Server/http -I/home/lyb/application_development/cpp/Tiny_Web_Server/threadpool   -pthread -std=c++11 -g   -std=gnu++14 -o CMakeFiles/test.dir/threadpool/test_for_threadpool.cpp.o -c /home/lyb/application_development/cpp/Tiny_Web_Server/threadpool/test_for_threadpool.cpp",
+  "file": "/home/lyb/application_development/cpp/Tiny_Web_Server/threadpool/test_for_threadpool.cpp"
 }
 ]

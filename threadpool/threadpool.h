@@ -1,183 +1,130 @@
+#ifndef M_THREADPOOL_H
+#define M_THREADPOOL_H
 /*
  * @Author: liuyibo 1299502716@qq.com
  * @Date: 2023-05-09 17:54:04
- * @LastEditors: liuyibo 1299502716@qq.com
- * @LastEditTime: 2023-05-10 16:38:19
+ * @LastEditors: liuyibo_ubuntu 1299502716@qq.com
+ * @LastEditTime: 2023-05-18 21:23:30
  * @FilePath: \Tiny_Web_Server\threadpool\mthreadpool.h
  * @Description: 实现了半同步半异步线程池模型
  */
-
-#ifndef M_THREADPOOL_H
-#define M_THREADPOOL_H
-
-#include <queue>
 #include <vector>
 #include <thread>
-#include <mutex>
 #include <condition_variable>
 #include <exception>
 #include <atomic>
 
-class mTask
-{
-public:
-    virtual int run() = 0;                                  // 执行任务
-};
+#include "taskqueue.h"
+// #include "task.h"
 
-template <typename T>
+
 class mThreadPool
 {
+private:
+    int                                         num_thread;         // 线程数量
+    std::unique_ptr<mTaskQueue>                 p_taskqueue;        // 智能指针：任务队列
+    std::vector<std::shared_ptr<std::thread>>   p_threadgroup;      // 智能指针：线程组
+    std::mutex                                  mtx_threadpool;     // 互斥锁：线程池
+    std::condition_variable                     var_notempty;       // 条件变量：保证多个线程获取任务的同步性
+    std::atomic_bool                            f_shutdonw;         // 标志位：线程池是否关闭
+
 public:
-    mThreadPool(int capacityTask, int capacityThreadPool);  // 构造函数
-    ~mThreadPool();                                         // 析构函数
-    bool addTask(const mTask& task);                        // 添加任务
+    // 构造函数
+    mThreadPool(int threadNum);  
+    // 析构函数
+    ~mThreadPool();             
+    // 提交任务
+    template<typename F, typename ...Args>
+    auto submit(F& f, Args&& ...args) -> decltype(p_taskqueue->addTask(f, std::forward<Args>(args)...));                            
+    // 消费者线程执行任务
+    void worker();
 
 private:
-    static void *worker(void *arg);                         // 工作处理函数
+    // 消费者线程处理任务函数
     void run();
 
-private:
-    /* 定义：任务队列相关 */
-    int                                 n_task_capacity;    // 最大任务数量
-    std::queue<mTask*>                  m_taskqueue;        // 任务队列
-    std::mutex                          m_mutex;            // 互斥锁：保证多线程向任务队列添加和删除任务的互斥
-    std::condition_variable             m_condition;        // 条件变量
-
-    // conditional 保证多个线程获取任务的同步性
-
-    /* 定义：线程相关     */
-    int                                 n_thread;           // 线程数量
-    std::vector<std::thread>            m_threadgroup;      // 线程组
-    std::atomic_bool                    f_running;          
-    // 标志位：线程池是否关闭
 };
-
 
 /**
  * @description: 构造函数
  */
-template <typename T>
-mThreadPool<T>::mThreadPool(int capacityTask, int capacityThreadPool)
-    :   n_task_capacity(capacityTask),
-        n_thread(capacityThreadPool),
-        f_running(false)
+mThreadPool::mThreadPool(int threadNum)
+    :   num_thread(threadNum),
+        f_shutdonw(false)
 {
-    if(n_task_capacity<=0 || n_thread<=0)
+    std::cout << "线程池构造， num_thread=" << num_thread << std::endl;
+
+    if(num_thread<=0)
         throw std::exception();
 
-    /* set running flag    */
-    f_running = true;
+    /* init task queue    */
+    p_taskqueue = std::make_unique<mTaskQueue>();
 
-    /* create thread group */
-    for(int iter=0; iter<n_thread; iter++)
+    /* init thread group   */
+    for(int iter=0; iter<num_thread; iter++)
     {
-        m_threadgroup.emplace_back(std::thread(std::bind(&mThreadPool::worker, this)));
+        p_threadgroup.push_back(std::make_shared<std::thread>(&mThreadPool::worker, this));
+        /* 与主线程脱离 */
+        p_threadgroup.back()->detach();
     }
 }
 
 /**
  * @description: 析构函数
  */
-template <typename T>
-mThreadPool<T>::~mThreadPool()
+mThreadPool::~mThreadPool()
 {
-    /* 设置作用域为括号内   */
+    std::cout << "线程池析构"  << std::endl;
+
+    /* set shutdonw flag     */
+    f_shutdonw = true;
+}
+
+
+/**
+ * @description: 提交任务
+ */
+template<typename F, typename ...Args>
+auto mThreadPool::submit(F& f, Args&& ...args) -> decltype(p_taskqueue->addTask(f, std::forward<Args>(args)...))
+{
+    /* add task and get return      */
+    auto ret = p_taskqueue->addTask(f, std::forward<Args>(args)...);
+
+    /* notify worker thread consume */
+    var_notempty.notify_one();
+
+    return ret;
+}
+
+/**
+ * @description: 消费者线程执行任务
+ */
+void mThreadPool::worker()
+{
+    std::cout << "线程池创建子线程 , thread_id = " << std::this_thread::get_id() << std::endl;
+    while(!f_shutdonw)
     {
         /* lock task queue       */
-        std::unique_lock<std::mutex> lock(m_mutex);
+        std::unique_lock<std::mutex> lock(mtx_threadpool);
 
-        /* reset running flag    */
-        f_running = false;
-
-        /* notify all            */
-        m_condition.notify_all();
-    }
-
-    /* join thread in threadgroup */
-    for(auto &t:m_threadgroup)
-    {
-        t.join();
-    }
-    /* release threadgroup        */
-    m_threadgroup.clear();
-}
-
-/**
- * @description: 添加任务
- */
-template <typename T>
-bool mThreadPool<T>::addTask(const Task& task)
-{
-    /* lock task queue       */
-    std::unique_lock<std::mutex> lock(m_mutex);
-
-    /* check taskqueue isFull */
-    if(m_taskqueue.size() > n_task_capacity)
-    {
-        return false;
-    }
-
-    /* add task to taskqueue */
-    m_taskqueue.push(task);    
-
-    /* notify one            */
-    m_condition.notify_one();
-
-    return true;
-}
-
-
-/**
- * @description: 工作处理函数
- */
-template <typename T>
-void* mThreadPool<T>::worker(void *arg)
-{
-    /* 由于静态成员无法获得private变量，因此通过arg传递参数 */
-    mThreadPool *pool = (mThreadPool *)arg;
-    pool->run();
-    return pool;
-}
-
-/**
- * @description: 工作处理函数
- */
-template <typename T>
-void mThreadPool<T>::run()
-{
-    while(f_running)
-    {
-        /* lock task queue       */
-        std::unique_lock<std::mutex> lock(m_mutex);
-
-        /*  check whether there is a task in taskqueue,
-            if there is a task, execute down.
-            otherwise block waiting 
+        /*  lambda表达式
+            如果任务队列为空，则阻塞在此
+            如果任务队列非空或者线程池关闭，则向下执行
         */
-        m_condition.wait(lock);
-        if(m_taskqueue.empty())
+        var_notempty.wait(lock, [this]
         {
-            std::unique_lock<std::mutex> unlock(m_mutex);
-            continue;
-        }
+            return !p_taskqueue->empty() || f_shutdonw;
+        });
 
-        /* get the front task   */
-        Task task = m_taskqueue.front();
-        m_taskqueue.pop();
+        /* get the task from taskqueue */
+        auto task = std::move(p_taskqueue->takeTask());
+        lock.unlock();
 
-        std::unique_lock<std::mutex> unlock(m_mutex);
-        if(!task)
-        {
-            continue;
-        }
-
-        /* exec task function   */
-        task.process();
-
+        /* execute task function    */
+        std::cout << "线程池子线程处理任务 , thread_id = " << std::this_thread::get_id() << std::endl;
+        task();
     }
+    std::cout << "线程池注销子线程 , thread_id = " << std::this_thread::get_id() << std::endl;
 }
-
-
-
 
 #endif 

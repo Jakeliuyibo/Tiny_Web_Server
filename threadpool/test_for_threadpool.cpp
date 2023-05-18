@@ -1,8 +1,8 @@
 /*
  * @Author: liuyibo 1299502716@qq.com
  * @Date: 2023-05-09 17:55:02
- * @LastEditors: liuyibo 1299502716@qq.com
- * @LastEditTime: 2023-05-10 16:06:09
+ * @LastEditors: liuyibo_ubuntu 1299502716@qq.com
+ * @LastEditTime: 2023-05-18 21:26:35
  * @FilePath: \Tiny_Web_Server\threadpool\test_for_threadpool.cpp
  * @Description: 测试文件
  */
@@ -12,36 +12,22 @@
 using namespace std;
 
 
-class Task
+int task_func(int args)
 {
-    private:
-        int total = 0;
-    public:
-         Task(std::function<void()> func) : m_func(func) {}
-        ~Task(){}
-        void process()
-        {
-            m_func();
-        }
-    private:
-        std::function<void()> m_func;
-};
-
-void test()
-{
-    std::cout << "task successful！" << std::endl;
+    std::cout << "task successful！ args=" << args << std::endl;
     this_thread::sleep_for(chrono::seconds(1));
+    return args;
 }
 
 int main()
 {
-    mThreadPool<Task> pool(8,8);
-    for(int ii=0; ii<100; ii++)
+    mThreadPool *pool = new mThreadPool(5);
+    for(int ii=0; ii<20; ii++)
     {
-        Task *task = new Task(test);
-        pool.addTask((Task&)task);
-        delete task;
+        auto ret = pool->submit(task_func, ii);
     }
+    this_thread::sleep_for(chrono::seconds(10));
+    std::cout << "done" << std::endl;
 
     return 0;
 }

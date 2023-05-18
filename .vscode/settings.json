@@ -115,7 +115,13 @@
     "any": "cpp",
     "hash_map": "cpp",
     "bit": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "queue": "cpp"
   },
-  "C_Cpp.default.compilerPath": "S:\\mingw64\\bin\\g++.exe"
+  "cmake.allowCommentsInPresetsFile": true,
+  "cmake.debugConfig": {
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false,
+      "stopAtEntry": true,
+  },
 }
