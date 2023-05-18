@@ -21,6 +21,7 @@ public:
     auto addTask(F& f, Args&& ...args) -> std::future<decltype(f(args...))>;                            
     // 取出任务
     mTask takeTask();
+    // 检测队列是否为空
     inline bool empty()
     {
         /* lock task queue       */
